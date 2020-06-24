@@ -17,16 +17,22 @@ movieList = []
 movieList.append('=== Top 10 Movies List ===')
 print('Run Start')
 for dd in bs_info.find_all('dd', ):
-    for channel_detail in dd.find_all('div', attrs={'class': 'channel-detail'}):
-        for atag in channel_detail.find_all('a', ):
-            if counter < 10:
-                movie_title = atag.text
-                movie_link = 'https://maoyan.com' + atag.get('href')
-                counter = counter + 1
-                movie = movie_title.strip() + ' link: ' + movie_link.strip()
-                movieList.append(movie)
-            else:
-                break
+    for channel_detail in dd.find_all('div', attrs={'class': 'movie-item film-channel'}):
+        if counter < 10:
+            counter += 1
+            movie_title = channel_detail.find(
+                'span', attrs={'class': 'name'}).text
+            movie_link = 'https://maoyan.com' + channel_detail.find(
+                'a', attrs={'data-act': 'movie-click'}).get('href')
+            hover_tags = channel_detail.find_all(
+                'span', attrs={'class': 'hover-tag'})
+            movie_cat = hover_tags[0].next_sibling.strip()
+            movie_time = hover_tags[2].next_sibling.strip()
+            movie = movie_title.strip() + ', category: ' + movie_cat + ', online_time: ' + \
+                movie_time + ', link: ' + movie_link.strip()
+            movieList.append(movie)
+        else:
+            break
 
 movie1 = pd.DataFrame(data=movieList)
 movie1.to_csv('./movieList1.csv', encoding='utf8',

@@ -11,3 +11,5 @@ import scrapy
 class MaoyanmovieItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
+    time = scrapy.Field()
+    category = scrapy.Field()

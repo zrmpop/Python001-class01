@@ -15,19 +15,25 @@ class MaoyanSpider(scrapy.Spider):
 
     def parse(self, response):
         counter = 0
-        atags = Selector(response=response).xpath(
-            '//dd/div/a[@data-act="movies-click"]')
+        divTags = Selector(response=response).xpath(
+            '//dd/div/div[@class="movie-item-hover"]')
 
-        # print(len(atags))
-        print(atags)
-        for atag in atags:
+        for divTag in divTags:
             if counter <= 10:
-                title = atag.xpath('./text()').extract_first()
-                link = 'https://maoyan.com' + \
-                    atag.xpath('./@href').extract_first()
+                title = divTag.xpath(
+                    './a/div/div/span[@class="name "]/text()').extract_first()
+                link = divTag.xpath(
+                    './a[@data-act="movie-click"]/@href').extract_first()
+                cat = divTag.xpath(
+                    './a/div/div[2]/text()').extract()[1].strip('\n').strip()
+                time = divTag.xpath(
+                    './a/div/div[4]/text()').extract()[1].strip('\n').strip()
+
                 item = MaoyanmovieItem()
                 item['title'] = title
-                item['link'] = link
+                item['link'] = 'https://maoyan.com' + link
+                item['time'] = time
+                item['category'] = cat
                 counter += 1
                 yield item
             else:
